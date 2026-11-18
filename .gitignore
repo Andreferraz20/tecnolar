@@ -1,0 +1,8 @@
+# arquivos de sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# conflitos de sincronização (Proton Drive, OneDrive etc.)
+*Name clash*
+*conflicted copy*

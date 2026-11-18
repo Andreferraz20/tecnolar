@@ -1,0 +1,1082 @@
+/* ==========================================================
+   TECNOLAR: estilos compartilhados (usa Bootstrap 5 como base)
+   Usado em todas as páginas do site.
+
+   Índice
+   1. Variáveis (cores e fontes do projeto)
+   2. Ponte com o Bootstrap (tema aplicado nos componentes prontos)
+   3. Base
+   4. Logo e topo do site
+   5. Botões e alertas
+   6. Formulários
+   7. Opções clicáveis (radio / checkbox personalizados)
+   8. Página de login
+   9. Página 404
+   10. Abrir chamado (3 passos)
+   11. Chamado confirmado / acompanhar chamado
+   12. Landing page: não tem bloco próprio, é card do Bootstrap
+       mais as classes utilitárias da seção 15
+   13. Painel admin (layout e linha do tempo)
+   14. Painel do técnico (itens de orçamento)
+   15. Utilitários (cores, larguras e pequenos ajustes usados direto no HTML)
+   ========================================================== */
+
+/* Fontes: títulos em Archivo Narrow, textos em Inter (precisa de internet) */
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+
+/* ---------- 1. VARIÁVEIS ----------
+   Mudou a cor aqui? Muda no site inteiro. */
+:root {
+  --azul-escuro: #0E2F5C;   /* fundo da capa, títulos, nav */
+  --azul: #14549B;          /* botões e links */
+  --azul-hover: #0E4382;
+  --azul-claro: #EBF1F8;    /* fundos suaves, item selecionado */
+  --fundo: #F0F4F9;         /* fundo das páginas */
+  --linha: #D8E0EB;         /* bordas */
+  --texto: #14233B;
+  --texto-suave: #6B7A90;
+  --vermelho: #B4342A;      /* erros / risco de SLA */
+  --vermelho-claro: #FBEAE8;
+  --ambar: #9A5B06;         /* avisos */
+  --ambar-claro: #FBF1DF;
+  --verde: #1E7A4C;         /* sucesso / concluído */
+  --verde-claro: #E4F3EA;
+  --superficie: #fff;      /* fundo de cartão, input, menu... troca no tema escuro */
+  --acento-marca: #0E2F5C; /* azul da marca p/ fundo (logo, faixa de login...); não troca no tema escuro */
+
+  --fonte-titulo: "Archivo Narrow", "Arial Narrow", sans-serif;
+  --fonte-texto: "Inter", "Segoe UI", Arial, sans-serif;
+
+  --raio: 10px;
+  --sombra: 0 10px 30px rgba(15, 47, 92, 0.12);
+}
+
+/* ---------- 1b. TEMA ESCURO (Desafio Plus, acessibilidade) ----------
+   Troca só as variáveis. Como quase todo o CSS já usa var(--algo)
+   em vez de cor fixa, a maior parte da página se repinta sozinha. */
+:root[data-tema="escuro"] {
+  --azul-escuro: #CFE0F7;
+  --azul: #5B9BE0;
+  --azul-hover: #7FB2E8;
+  --azul-claro: #16304F;
+  --fundo: #0F1620;
+  --linha: #2A3547;
+  --texto: #E8ECF2;
+  --texto-suave: #9AA7B8;
+  --vermelho: #E58A80;
+  --vermelho-claro: #3A1E1C;
+  --ambar: #E0B868;
+  --ambar-claro: #3A2E14;
+  --verde: #6FCB9A;
+  --verde-claro: #16301F;
+  --superficie: #182130;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --bs-emphasis-color-rgb: 232, 236, 242;
+  --bs-secondary-rgb: 154, 167, 184;
+}
+:root[data-tema="escuro"] .logo:not(.logo-claro) { color: var(--texto); }
+:root[data-tema="escuro"] .entrada::placeholder { color: #6B7A90; }
+
+/* ---------- 1c. ESCALA DE FONTE (Desafio Plus) ----------
+   Como boa parte dos tamanhos no projeto usa rem/em (inclusive no
+   Bootstrap), aumentar o tamanho base em % escala o texto inteiro
+   sem precisar mexer em cada componente. */
+html.fonte-85 { font-size: 85%; }
+html.fonte-115 { font-size: 115%; }
+html.fonte-130 { font-size: 130%; }
+html.fonte-150 { font-size: 150%; }
+html.fonte-175 { font-size: 175%; }
+html.fonte-200 { font-size: 200%; }
+
+/* ---------- 1d. BARRA DE ACESSIBILIDADE (Desafio Plus) ----------
+   Montada em js/acessibilidade.js, fica fixa no canto da tela
+   em todas as páginas, por isso vive aqui e não em cada arquivo. */
+.barra-acessibilidade {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1500;
+  display: flex;
+  gap: 6px;
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow: var(--sombra);
+  font-family: var(--fonte-texto);
+}
+
+.botao-acessibilidade {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--linha);
+  background: transparent;
+  color: var(--texto);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ---------- 1e. TOASTS (substituem o window.alert()) ---------- */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast-aviso {
+  box-shadow: var(--sombra);
+  min-width: 260px;
+  transition: opacity 0.4s;
+}
+
+.toast-aviso.toast-saindo { opacity: 0; }
+
+/* ---------- 2. PONTE COM O BOOTSTRAP ----------
+   O Bootstrap define as próprias cores em variáveis --bs-*.
+   Sobrescrevendo elas aqui, os componentes prontos dele
+   (botões, navbar, badges, cards, tabelas...) já nascem
+   com a identidade visual da TecnoLar, sem precisar reescrever
+   cada componente do zero. */
+:root {
+  --bs-primary: var(--azul);
+  --bs-primary-rgb: 20, 84, 155;
+  --bs-link-color: var(--azul);
+  --bs-link-hover-color: var(--azul-hover);
+  --bs-body-color: var(--texto);
+  --bs-body-bg: var(--fundo);
+  --bs-emphasis-color: var(--texto);
+  --bs-emphasis-color-rgb: 20, 35, 59;
+  --bs-secondary-color: var(--texto-suave);
+  --bs-secondary: var(--texto-suave);
+  --bs-secondary-rgb: 107, 122, 144;
+  --bs-body-font-family: var(--fonte-texto);
+  --bs-border-color: var(--linha);
+  --bs-border-radius: 8px;
+  --bs-border-radius-lg: var(--raio);
+  --bs-danger: var(--vermelho);
+  --bs-warning: var(--ambar);
+  --bs-success: var(--verde);
+}
+.btn-primary {
+  --bs-btn-bg: var(--azul);
+  --bs-btn-border-color: var(--azul);
+  --bs-btn-hover-bg: var(--azul-hover);
+  --bs-btn-hover-border-color: var(--azul-hover);
+  --bs-btn-active-bg: var(--azul-hover);
+  --bs-btn-active-border-color: var(--azul-hover);
+  font-weight: 600;
+}
+.navbar-dark.bg-tecnolar { background: var(--acento-marca) !important; }
+.form-control:focus, .form-select:focus {
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px rgba(20, 84, 155, 0.15);
+}
+h1, h2, h3, .font-titulo { font-family: var(--fonte-titulo); }
+
+
+/* ---------- 3. BASE ---------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--fundo);
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  line-height: 1.1;
+  color: var(--azul-escuro);
+}
+
+a { color: var(--azul); font-weight: 600; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+fieldset { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+legend { padding: 0; }
+
+/* Fundo listrado usado nos "espaços de foto", igual ao wireframe */
+.listrado {
+  background: repeating-linear-gradient(135deg, #E6EDF7 0 8px, #F3F6FB 8px 16px);
+}
+
+
+/* ---------- 4. LOGO E TOPO ---------- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: var(--azul-escuro);
+}
+.logo:hover { text-decoration: none; }
+
+.logo small {
+  font-family: var(--fonte-texto);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--texto-suave);
+}
+
+/* Ícone do logo: quadrado azul com uma casinha desenhada só com CSS */
+.logo-icone {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--acento-marca);
+  display: grid;
+  place-items: center;
+}
+.logo-icone::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: var(--superficie);
+  clip-path: polygon(50% 0, 100% 45%, 85% 45%, 85% 100%, 15% 100%, 15% 45%, 0 45%);
+}
+
+/* Versão do logo para fundo azul */
+.logo-claro { color: #fff; }
+.logo-claro small { color: #9DB7DC; }
+.logo-claro .logo-icone { background: rgba(255, 255, 255, 0.16); }
+
+.topo {
+  background: var(--superficie);
+  border-bottom: 1px solid var(--linha);
+}
+.topo-conteudo {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.topo-acoes { display: flex; align-items: center; gap: 16px; }
+.topo-ajuda { font-size: 0.8rem; color: var(--texto-suave); }
+
+/* Botão do menu hambúrguer (3 tracinhos) */
+.menu-hamburguer {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: var(--superficie);
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.menu-hamburguer span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--acento-marca);
+  border-radius: 2px;
+}
+
+
+/* ---------- 5. BOTÕES E ALERTAS ---------- */
+.botao {
+  display: inline-block;
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-family: var(--fonte-texto);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.botao:hover { text-decoration: none; }
+.botao:active { transform: translateY(1px); }
+
+.botao-primario { background: var(--azul); color: #fff; }
+.botao-primario:hover { background: var(--azul-hover); }
+
+.botao-secundario { background: var(--superficie); color: var(--azul-escuro); border-color: var(--linha); }
+.botao-secundario:hover { border-color: var(--azul); }
+
+.botao-total { width: 100%; }
+.botao-pequeno { padding: 8px 14px; font-size: 0.8rem; }
+
+/* Caixas de aviso: erro (vermelho), aviso (âmbar) e informação (azul) */
+.alerta {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+.alerta strong { display: block; margin-bottom: 2px; }
+.alerta p { margin: 0; }
+
+.alerta-erro  { background: var(--vermelho-claro); border-color: #EFC3BE; color: var(--vermelho); }
+.alerta-aviso { background: var(--ambar-claro);    border-color: #EBD6AE; color: var(--ambar); }
+.alerta-info  { background: var(--azul-claro);     border-color: #CBD8EE; color: var(--azul-escuro); }
+
+/* Bolinha com "!" (ou "i" no alerta de informação) */
+.alerta-icone {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  display: grid;
+  place-items: center;
+}
+.alerta-icone::before { content: "!"; color: #fff; font-size: 0.8rem; font-weight: 700; }
+.alerta-info .alerta-icone::before { content: "i"; }
+
+
+/* ---------- 6. FORMULÁRIOS ---------- */
+.campo { margin-bottom: 18px; }
+
+.rotulo,
+.campo label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.opcional { font-weight: 400; color: var(--texto-suave); }
+
+.entrada {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: var(--superficie);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--texto);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.entrada::placeholder { color: #A5B0C0; }
+.entrada:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px rgba(20, 84, 156, 0.15);
+}
+.entrada.erro { border-color: var(--vermelho); }
+textarea.entrada { min-height: 96px; resize: vertical; }
+
+.dica { margin: 6px 0 0; font-size: 0.76rem; color: var(--texto-suave); }
+.mensagem-erro { margin: 6px 0 0; font-size: 0.76rem; color: var(--vermelho); }
+
+/* Grades: colocam campos lado a lado */
+.grade { display: grid; gap: 16px; }
+.grade-2   { grid-template-columns: 1fr 1fr; }
+.grade-3   { grid-template-columns: 1fr 1fr 1fr; }
+.grade-2-1 { grid-template-columns: 2fr 1fr; }
+.grade-cep { grid-template-columns: 150px 1fr; }
+
+/* Checkbox simples com texto ao lado */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+.checkbox input { width: 16px; height: 16px; accent-color: var(--azul); }
+
+
+/* ---------- 7. OPÇÕES CLICÁVEIS ----------
+   Truque: o input (radio/checkbox) fica escondido e o visual é
+   desenhado no <span> logo depois dele. Quando o input está
+   marcado (:checked), o span muda de cor. Funciona sem JavaScript. */
+.opcao { position: relative; display: block; cursor: pointer; }
+.opcao input { position: absolute; opacity: 0; pointer-events: none; }
+
+.opcao-caixa {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.opcao:hover .opcao-caixa { border-color: var(--azul); }
+.opcao input:checked + .opcao-caixa {
+  border-color: var(--azul);
+  background: var(--azul-claro);
+  box-shadow: 0 0 0 1px var(--azul);
+}
+.opcao input:focus-visible + .opcao-caixa { outline: 2px solid var(--azul); outline-offset: 2px; }
+.opcao input:disabled + .opcao-caixa {
+  opacity: 0.5;
+  background: var(--fundo);
+  cursor: not-allowed;
+  border-color: var(--linha);
+  box-shadow: none;
+}
+
+/* Opção em linha: bolinha de seleção + texto */
+.opcao-linha { display: flex; align-items: center; gap: 12px; }
+.marcador {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border: 2px solid #B9C5D6;
+  border-radius: 50%;
+  background: var(--superficie);
+  transition: border-color 0.2s;
+}
+.opcao input:checked + .opcao-caixa .marcador {
+  border-color: var(--azul);
+  background: radial-gradient(circle, var(--azul) 0 4px, #fff 5px);
+}
+
+/* Botões lado a lado (Sim / Não / Não sei) */
+.segmentado {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: var(--superficie);
+}
+.segmentado label { position: relative; }
+.segmentado input { position: absolute; opacity: 0; }
+.segmentado span {
+  display: block;
+  padding: 10px 8px;
+  border-left: 1px solid var(--linha);
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.segmentado label:first-child span { border-left: 0; }
+.segmentado input:checked + span { background: var(--acento-marca); color: #fff; font-weight: 600; }
+.segmentado input:focus-visible + span { outline: 2px solid var(--azul); outline-offset: -3px; }
+
+/* Etiquetas arredondadas (não gela, faz ruído...) */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; }
+.chip span {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid var(--linha);
+  border-radius: 999px;
+  background: var(--superficie);
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.chip:hover span { border-color: var(--azul); }
+.chip input:checked + span { background: var(--azul-claro); border-color: var(--azul); color: var(--azul); font-weight: 600; }
+.chip input:focus-visible + span { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+
+/* ---------- 8. PÁGINA DE LOGIN ---------- */
+.login-faixa {
+  height: 290px;
+  padding: 44px 24px 0;
+  background-color: var(--acento-marca);
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 14px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.login-principal { padding: 0 20px 48px; }
+
+/* O cartão sobe um pouco sobre a faixa azul (margem negativa) */
+.login-cartao {
+  max-width: 440px;
+  margin: -150px auto 0;
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+}
+.login-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--linha);
+}
+.login-cabecalho h1 { font-size: 1.6rem; }
+.login-cabecalho p { margin: 0; font-size: 0.8rem; color: var(--texto-suave); }
+
+.login-form { padding: 24px 28px 8px; }
+.login-rodape {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 16px 0 22px;
+  border-top: 1px solid var(--linha);
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+}
+
+/* Linha "Senha ........ Esqueci minha senha" */
+.rotulo-linha { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.rotulo-linha label { margin: 0; }
+.rotulo-linha a { font-size: 0.78rem; }
+
+/* Campo de senha com o botão "mostrar" por cima */
+.senha-caixa { position: relative; }
+.senha-caixa .entrada { padding-right: 84px; }
+.senha-mostrar {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+.senha-mostrar:hover { color: var(--azul); }
+.login-form .checkbox { margin-bottom: 20px; }
+
+
+/* ---------- 9. PÁGINA 404 ---------- */
+.pagina-erro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: repeating-linear-gradient(135deg, rgba(15, 47, 92, 0.035) 0 2px, transparent 2px 14px);
+}
+.erro-principal { flex: 1; display: grid; place-items: center; padding: 40px 20px; }
+
+.erro-cartao {
+  width: 100%;
+  max-width: 920px;
+  padding: 56px 52px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 56px;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+}
+
+.erro-numero { padding-left: 22px; border-left: 4px solid var(--vermelho); }
+.erro-rotulo { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; color: var(--vermelho); }
+
+/* O "404" usa em (proporcional ao tamanho da fonte) para o
+   tambor do meio acompanhar o tamanho dos números */
+.erro-codigo {
+  display: flex;
+  align-items: center;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(96px, 16vw, 150px);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--vermelho);
+}
+
+/* O "0" é a janela de uma máquina de lavar (um SVG com várias partes).
+   Cada parte tem a sua própria animação:
+   - .aro / .aro-interno / .vidro: moldura e vidro da porta
+   - .roupas: peças de roupa girando dentro do tambor
+   - .balanco + .agua-fundo / .agua-frente: a água balançando e ondulando
+   - .bolha: bolhas subindo
+   - a máquina inteira também treme de leve, como na centrifugação */
+.maquina {
+  width: 0.7em;
+  height: 0.7em;
+  margin: 0 0.02em;
+  overflow: visible;
+  animation: tremer 0.35s linear infinite;
+}
+.maquina .aro         { fill: var(--vermelho); }
+.maquina .aro-interno { fill: #8F2219; }
+.maquina .vidro       { fill: #EAF1FB; }
+.maquina .reflexo     { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; opacity: 0.85; }
+
+.maquina .roupas {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  animation: girar 5s linear infinite;
+}
+.maquina .balanco {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  animation: balancar 2.6s ease-in-out infinite;
+}
+.maquina .agua-fundo  { fill: #9DB7DC; opacity: 0.7; animation: onda 3s linear infinite; }
+.maquina .agua-frente { fill: var(--azul); opacity: 0.38; animation: onda 2s linear infinite reverse; }
+
+.maquina .bolha { fill: #fff; opacity: 0; animation: subir 3s ease-in infinite; }
+.maquina .bolha:nth-child(2) { animation-delay: -1s; }
+.maquina .bolha:nth-child(3) { animation-delay: -2s; }
+.maquina .bolha:nth-child(4) { animation-delay: -0.5s; }
+
+/* Os dois "4" caem na entrada da página (uma vez só) */
+.digito { animation: entrar 0.7s ease-out both; }
+.digito-final { animation-delay: 0.25s; }
+
+@keyframes girar  { to { transform: rotate(360deg); } }
+@keyframes balancar {
+  0%, 100% { transform: rotate(-5deg); }
+  50%      { transform: rotate(5deg); }
+}
+@keyframes onda { to { transform: translateX(-50px); } }
+@keyframes subir {
+  0%   { transform: translateY(0);     opacity: 0; }
+  20%  { opacity: 0.9; }
+  100% { transform: translateY(-26px); opacity: 0; }
+}
+@keyframes tremer {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(1px, -1px); }
+  50%      { transform: translate(-1px, 1px); }
+  75%      { transform: translate(1px, 1px); }
+}
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(-30px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.erro-texto h1 { margin-bottom: 12px; font-size: 2.4rem; }
+.erro-texto p { max-width: 46ch; margin: 0 0 24px; color: var(--texto-suave); }
+.erro-botoes { display: flex; flex-wrap: wrap; gap: 12px; }
+.erro-texto .erro-ajuda {
+  max-width: none;
+  margin: 28px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--linha);
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+/* Quem desativa animações no sistema não vê nada se mexendo */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+
+/* ---------- 10. ABRIR CHAMADO ---------- */
+.pagina-chamado { max-width: 760px; margin: 32px auto 64px; padding: 0 20px; }
+
+.cartao {
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+}
+.cartao-topo {
+  padding: 28px 32px 22px;
+  border-bottom: 1px solid var(--linha);
+  background: linear-gradient(180deg, var(--azul-claro), var(--superficie));
+}
+.cartao-topo h1 { font-size: 2rem; }
+.cartao-topo p { margin: 6px 0 22px; font-size: 0.9rem; color: var(--texto-suave); }
+.cartao-corpo { padding: 28px 32px; }
+.cartao-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 32px;
+  border-top: 1px solid var(--linha);
+  background: var(--fundo);
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+.botoes { display: flex; gap: 10px; }
+
+/* Indicador de passos: (1) ---- (2) ---- (3) */
+/* flex-wrap evita que passos a mais (ex: acompanhar chamado tem 5) sejam
+   cortados pelo "overflow: hidden" do .cartao. Quando não cabe numa
+   linha só, quebra pra linha de baixo em vez de sumir. */
+.passos { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; row-gap: 14px; margin: 0; padding: 0; list-style: none; }
+.passo { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--texto-suave); white-space: nowrap; }
+.passo-numero {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #B9C5D6;
+  border-radius: 50%;
+  background: var(--superficie);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.passo-linha { flex: 1; height: 2px; background: var(--linha); }
+.passo-linha.feita { background: var(--azul); }
+
+.passo.ativo,
+.passo.feito { color: var(--azul-escuro); font-weight: 600; }
+.passo.ativo .passo-numero,
+.passo.feito .passo-numero { background: var(--azul); border-color: var(--azul); color: #fff; }
+
+/* Passo 1: cartões dos aparelhos */
+.aparelhos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.aparelho-caixa { padding: 12px 10px; text-align: center; }
+.aparelho-icone {
+  height: 64px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--azul);
+  transition: background 0.2s, color 0.2s;
+}
+.aparelho-icone svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.aparelho-nome { font-size: 0.82rem; font-weight: 600; }
+.opcao input:checked + .aparelho-caixa .aparelho-icone { background: var(--azul); color: #fff; }
+
+/* Botão de anexar fotos */
+.fotos { display: flex; flex-wrap: wrap; gap: 10px; }
+.foto-add {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-content: center;
+  border: 1.5px dashed #AFC0DA;
+  border-radius: 10px;
+  background: var(--fundo);
+  font-size: 0.72rem;
+  text-align: center;
+  color: var(--azul);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.foto-add:hover { background: var(--azul-claro); border-color: var(--azul); }
+.foto-add input { display: none; }
+.foto-add strong { display: block; font-size: 1.5rem; line-height: 1; }
+
+/* Caixa com fundo claro para agrupar campos */
+.caixa {
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--fundo);
+}
+.caixa h3 { margin-bottom: 14px; font-size: 1.05rem; }
+.caixa .campo:last-child { margin-bottom: 0; }
+
+/* Passo 2: endereços */
+.lista-opcoes { display: grid; gap: 10px; }
+.endereco-nome { font-size: 0.9rem; font-weight: 600; }
+.endereco-detalhe { font-size: 0.8rem; color: var(--texto-suave); }
+.opcao-linha .editar { margin-left: auto; font-size: 0.75rem; }
+.opcao-tracejada .opcao-caixa { border-style: dashed; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--azul); }
+
+.miniatura {
+  width: 60px;
+  height: 60px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--azul);
+}
+.miniatura svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid #CBD8EE;
+  border-radius: var(--raio);
+  background: var(--azul-claro);
+  font-size: 0.82rem;
+}
+.setor strong { display: block; font-size: 0.92rem; color: var(--azul-escuro); }
+.setor span { color: var(--texto-suave); }
+
+.recebe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+}
+.recebe strong { display: block; font-size: 0.9rem; }
+.recebe small { color: var(--texto-suave); font-size: 0.76rem; }
+.recebe .segmentado { width: 230px; flex: none; }
+
+/* Passo 3: dias, horários e resumo */
+.semana-topo { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 0.8rem; }
+.semana-topo strong { font-size: 0.85rem; }
+.dias { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 24px; }
+.dia-caixa { padding: 10px 4px; text-align: center; }
+.dia-sem { display: block; font-size: 0.68rem; font-weight: 600; color: var(--texto-suave); }
+.dia-num { display: block; font-family: var(--fonte-titulo); font-size: 1.6rem; font-weight: 700; line-height: 1.15; color: var(--azul-escuro); }
+.dia-livres { display: block; font-size: 0.68rem; color: var(--texto-suave); }
+.opcao input:checked + .dia-caixa .dia-livres { color: var(--azul); font-weight: 600; }
+
+.janelas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.janela-hora { display: block; font-size: 0.95rem; font-weight: 700; }
+.janela-tecnico { display: block; font-size: 0.76rem; color: var(--texto-suave); }
+
+.sem-horario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  font-size: 0.85rem;
+}
+.sem-horario small { display: block; color: var(--texto-suave); }
+
+.resumo {
+  margin: 24px 0 18px;
+  padding: 18px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+}
+.resumo h3 { margin-bottom: 14px; font-size: 1.05rem; }
+.resumo-item { display: flex; gap: 14px; font-size: 0.82rem; color: var(--texto-suave); }
+.resumo-item strong { display: block; font-size: 0.95rem; color: var(--texto); }
+.resumo-taxa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--linha);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.resumo-taxa small { display: block; font-weight: 400; color: var(--texto-suave); }
+.resumo-preco { font-family: var(--fonte-titulo); font-size: 1.6rem; font-weight: 700; color: var(--azul-escuro); }
+
+
+/* ---------- 11. CHAMADO CONFIRMADO / ACOMPANHAR ---------- */
+.confirmacao-topo {
+  padding-top: 36px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--verde-claro), var(--superficie));
+}
+.confirmacao-topo h1 { font-size: 2.2rem; }
+.confirmacao-topo p { margin: 8px 0 14px; }
+.confirmacao-topo .passos { margin-top: 24px; }
+
+/* Selo de sucesso: o círculo e o ✓ são "desenhados" na entrada.
+   A animação usa stroke-dashoffset: a linha começa escondida
+   (deslocada) e vai até a posição normal (0). */
+.selo { display: block; width: 84px; height: 84px; margin: 0 auto 16px; }
+.selo-circulo {
+  fill: var(--superficie);
+  stroke: var(--verde);
+  stroke-width: 4;
+  stroke-dasharray: 214;
+  --comprimento: 214;
+  animation: desenhar 0.8s ease-out backwards;
+}
+.selo-check {
+  fill: none;
+  stroke: var(--verde);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 50;
+  --comprimento: 50;
+  animation: desenhar 0.45s 0.7s ease-out backwards;
+}
+@keyframes desenhar { from { stroke-dashoffset: var(--comprimento); } to { stroke-dashoffset: 0; } }
+
+.protocolo {
+  display: inline-block;
+  padding: 4px 16px;
+  border: 1px solid #BFE0CD;
+  border-radius: 999px;
+  background: var(--superficie);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--verde);
+}
+
+/* "O que acontece agora": aqui os números fazem sentido, é uma sequência */
+.proximos { display: grid; gap: 16px; margin: 0 0 22px; padding: 0; list-style: none; }
+.proximos li { display: flex; gap: 14px; }
+.proximo-numero {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--azul);
+}
+.proximos strong { display: block; font-size: 0.92rem; }
+.proximos p { margin: 2px 0 0; font-size: 0.82rem; color: var(--texto-suave); }
+.corpo-titulo { margin: 28px 0 14px; font-size: 1.15rem; }
+
+
+/* ---------- 13. PAINEL ADMIN ---------- */
+.admin-layout { display: flex; min-height: 100vh; }
+.admin-sidebar {
+  width: 220px;
+  flex: none;
+  background: var(--superficie);
+  border-right: 1px solid var(--linha);
+  padding: 20px 14px;
+}
+.admin-sidebar .nav-link {
+  color: var(--texto);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-sidebar .nav-link.active { background: var(--azul-claro); color: var(--azul-escuro); font-weight: 700; }
+.admin-sidebar .nav-link:hover { background: var(--fundo); }
+.admin-main { flex: 1; padding: 28px 32px; background: var(--fundo); min-height: 100vh; }
+
+.cartao-estatistica { border: 1px solid var(--linha); border-radius: var(--raio); background: var(--superficie); padding: 16px 18px; }
+.cartao-estatistica.risco { border-color: #EFC3BE; background: var(--vermelho-claro); }
+
+/* Botão de menu do admin: só aparece no celular (vira o acesso à
+   sidebar, que nessa largura some por padrão). */
+.botao-menu-admin { display: none; }
+
+@media (max-width: 760px) {
+  .admin-sidebar { display: none; }
+  .admin-sidebar.aberta {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    box-shadow: var(--sombra);
+  }
+  .botao-menu-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    background: var(--superficie);
+    margin-bottom: 12px;
+  }
+}
+
+/* Linha do tempo do chamado (tela de detalhe do admin): uma lista
+   vertical com uma bolinha em cada item, ligadas por uma linha. */
+.linha-tempo { list-style: none; padding: 0; margin: 0; }
+.linha-tempo li { position: relative; padding: 0 0 22px 26px; border-left: 2px solid var(--linha); margin-left: 6px; }
+.linha-tempo li:last-child { border-color: transparent; padding-bottom: 0; }
+.linha-tempo li::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--azul);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--azul);
+}
+
+
+/* ---------- 14. PAINEL DO TÉCNICO ---------- */
+/* Linha de item do orçamento: descrição + valor + botão de remover,
+   lado a lado. Só empilha numa coluna quando o celular é estreito. */
+.item-orcamento { display: grid; grid-template-columns: 1fr 120px auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+@media (max-width: 560px) {
+  .item-orcamento { grid-template-columns: 1fr; }
+}
+
+
+/* ---------- 15. UTILITÁRIOS ---------- */
+.texto-azul-escuro { color: var(--azul-escuro); }
+.texto-azul { color: var(--azul); }
+.texto-vermelho { color: var(--vermelho); }
+.fundo-azul-claro { background: var(--azul-claro); }
+.fundo-azul-escuro { background: var(--acento-marca); }
+.raio-grande { border-radius: var(--raio); }
+.caixa-arredondada { border-radius: var(--raio); border: 1px solid var(--linha); background: var(--superficie); }
+.destaque-azul { border: 2px solid var(--azul); }
+.rotulo-secao { letter-spacing: 0.04em; }
+.rotulo-destaque-escuro { letter-spacing: 0.08em; color: #9DB7DC; }
+.texto-subtitulo-escuro { color: #C7D6ED; }
+.dica-compacta { margin-top: -10px; }
+.checkbox-espacado { margin-bottom: 18px; }
+.largura-360 { max-width: 360px; }
+.largura-560 { max-width: 560px; }
+.largura-640 { max-width: 640px; }
+.largura-760 { max-width: 760px; }
+.linha-clicavel { cursor: pointer; }
+
+
+/* ---------- RESPONSIVO (celulares) ---------- */
+@media (max-width: 760px) {
+  .erro-cartao { grid-template-columns: 1fr; gap: 28px; padding: 36px 28px; }
+}
+
+@media (max-width: 600px) {
+  .grade-2, .grade-3, .grade-2-1, .grade-cep { grid-template-columns: 1fr; }
+  .aparelhos { grid-template-columns: repeat(2, 1fr); }
+  .dias { grid-template-columns: repeat(3, 1fr); }
+  .janelas { grid-template-columns: 1fr; }
+  .cartao-topo, .cartao-corpo, .cartao-rodape { padding-left: 20px; padding-right: 20px; }
+  .passo:not(.ativo) .passo-texto { display: none; } /* no celular só mostra o nome do passo atual */
+  .recebe { flex-direction: column; align-items: stretch; }
+  .recebe .segmentado { width: 100%; }
+  .topo-ajuda { display: none; }
+}

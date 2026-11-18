@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abrir chamado — Endereço | TecnoLar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-conteudo">
+      <a href="../index.html" class="logo"><span class="logo-icone"></span>TECNOLAR</a>
+      <div class="d-flex align-items-center gap-3">
+        <span class="topo-ajuda d-none" id="texto-usuario-logado"></span>
+        <a href="#" class="topo-ajuda d-none" id="link-sair-topo">Sair</a>
+        <a href="meus-chamados.html" class="topo-ajuda d-none" id="link-meus-chamados-topo">Meus chamados</a>
+        <span class="topo-ajuda">Precisa de ajuda? WhatsApp (00) 0000-0000</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="pagina-chamado">
+    <form class="cartao" id="form-passo-2">
+      <div class="cartao-topo">
+        <h1>Onde é a visita?</h1>
+        <p>O endereço define qual equipe atende você.</p>
+        <ol class="passos" aria-label="Etapas do chamado">
+          <li class="passo feito"><span class="passo-numero">✓</span><span class="passo-texto">Seu aparelho</span></li>
+          <li class="passo-linha feita" aria-hidden="true"></li>
+          <li class="passo ativo" aria-current="step"><span class="passo-numero">2</span><span class="passo-texto">Endereço</span></li>
+          <li class="passo-linha" aria-hidden="true"></li>
+          <li class="passo"><span class="passo-numero">3</span><span class="passo-texto">Data da visita</span></li>
+        </ol>
+      </div>
+
+      <div class="cartao-corpo">
+        <fieldset id="bloco-enderecos-salvos">
+          <legend class="rotulo">Endereços salvos</legend>
+          <div class="lista-opcoes">
+            <label class="opcao">
+              <input type="radio" name="endereco" value="Casa" checked>
+              <span class="opcao-caixa opcao-linha">
+                <span class="marcador"></span>
+                <span>
+                  <span class="endereco-nome">Casa</span><br>
+                  <span class="endereco-detalhe" id="texto-endereco-salvo">R. das Acácias, 45 — apto 302 · Aparecida</span>
+                </span>
+              </span>
+            </label>
+            <label class="opcao opcao-tracejada">
+              <input type="radio" name="endereco" value="novo">
+              <span class="opcao-caixa">+ Usar outro endereço</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="caixa">
+          <h3>Novo endereço</h3>
+          <div class="grade grade-cep">
+            <div class="campo">
+              <label for="cep">CEP *</label>
+              <input class="entrada" type="text" id="cep" name="cep" placeholder="00000-000" inputmode="numeric" maxlength="9">
+              <p class="dica" id="status-cep"></p>
+            </div>
+            <div class="campo">
+              <label for="rua">Rua</label>
+              <input class="entrada" type="text" id="rua" name="rua" placeholder="preenchido pelo CEP">
+            </div>
+          </div>
+          <div class="grade grade-3">
+            <div class="campo">
+              <label for="numero">Número *</label>
+              <input class="entrada" type="text" id="numero" name="numero" placeholder="45">
+            </div>
+            <div class="campo">
+              <label for="complemento">Complemento</label>
+              <input class="entrada" type="text" id="complemento" name="complemento" placeholder="apto, bloco...">
+            </div>
+            <div class="campo">
+              <label for="bairro">Bairro</label>
+              <input class="entrada" type="text" id="bairro" name="bairro" placeholder="Aparecida">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="referencia">Ponto de referência <span class="opcional">(opcional)</span></label>
+            <input class="entrada" type="text" id="referencia" name="referencia" placeholder="ex: portão azul, ao lado da padaria">
+          </div>
+        </div>
+
+        <div class="setor">
+          <span class="miniatura listrado" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>
+          </span>
+          <div>
+            <strong>Aparecida é atendido pela equipe Norte-2</strong>
+            <span>3 técnicos no setor · 2 com especialidade em refrigeração · visita normalmente em até 24h</span>
+          </div>
+        </div>
+
+        <div class="recebe">
+          <div>
+            <strong>Quem recebe o técnico?</strong>
+            <small>Precisa ser maior de 18 anos</small>
+          </div>
+          <div class="segmentado">
+            <label><input type="radio" name="recebe" value="eu-mesmo" checked><span>Eu mesmo</span></label>
+            <label><input type="radio" name="recebe" value="outra-pessoa"><span>Outra pessoa</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="cartao-rodape">
+        <span>Passo 2 de 3</span>
+        <div class="botoes">
+          <a href="chamado-passo-1.html" class="botao botao-secundario">Voltar</a>
+          <button type="submit" class="botao botao-primario">Ver horários</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/validacao.js"></script>
+  <script src="../js/paginas/chamado-passo-2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/acessibilidade.js"></script>
+</body>
+</html>
