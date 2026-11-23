@@ -43,10 +43,6 @@ fogão, ar-condicionado). Cobre três jornadas:
 
 ## Estrutura
 
-Esta pasta (`projeto-tecnolar/`) é **só o site final** — é ela que deve ser entregue/zipada/
-publicada. O material original do grupo (`SUELLEN/`, `Pagina Do ADM/`) ficou um nível acima,
-fora daqui, só como histórico de onde cada tela veio.
-
 As páginas ficam separadas por quem usa cada uma: `cliente/`, `tecnico/` e `admin/`. O que
 é comum a todo mundo (landing page, login, 404, estilos e scripts) fica na raiz.
 
@@ -229,4 +225,3 @@ Uma barrinha fixa no canto inferior direito, presente em todas as páginas
 
 As duas preferências ficam salvas no `localStorage` e continuam valendo ao navegar
 para outra página ou recarregar.
-ss
