@@ -1055,7 +1055,7 @@ textarea.entrada { min-height: 96px; resize: vertical; }
 .rotulo-secao { letter-spacing: 0.04em; }
 .rotulo-destaque-escuro { letter-spacing: 0.08em; color: #9DB7DC; }
 .texto-subtitulo-escuro { color: #C7D6ED; }
-.dica-compacta { margin-top: -10px; }
+.dica-compacta { margin-top: 2px; }
 .checkbox-espacado { margin-bottom: 18px; }
 .largura-360 { max-width: 360px; }
 .largura-560 { max-width: 560px; }
